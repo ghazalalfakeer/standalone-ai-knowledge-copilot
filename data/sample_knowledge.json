@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "items": [
+    {
+      "id": "python-modules",
+      "title": "Python Modules",
+      "content": "A Python module is a file containing Python definitions and statements. Modules help organize application code into reusable and maintainable components.",
+      "tags": [
+        "python",
+        "modules",
+        "software-engineering"
+      ],
+      "source": "internal-demo"
+    },
+    {
+      "id": "virtual-environments",
+      "title": "Python Virtual Environments",
+      "content": "A virtual environment creates an isolated Python environment for a project. It prevents dependencies from one project from interfering with dependencies from another project.",
+      "tags": [
+        "python",
+        "venv",
+        "dependencies"
+      ],
+      "source": "internal-demo"
+    },
+    {
+      "id": "json-storage",
+      "title": "JSON File Storage",
+      "content": "JSON is a human-readable data format commonly used for configuration, APIs, and simple persistent storage. Python provides built-in JSON support through the json module.",
+      "tags": [
+        "python",
+        "json",
+        "storage"
+      ],
+      "source": "internal-demo"
+    }
+  ]
+}

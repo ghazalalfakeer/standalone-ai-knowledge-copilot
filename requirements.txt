@@ -1,0 +1,7 @@
+# Standalone AI Knowledge Copilot
+# Task 1 - Python Engineering Foundations
+#
+# No third-party Python dependencies are required for Task 1.
+# The project currently uses Python standard-library modules only.
+#
+# Future tasks will add dependencies as required.
