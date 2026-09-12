@@ -1,133 +1,145 @@
 # Standalone AI Knowledge Copilot
 
-A modular Python project that will progressively evolve into a standalone AI-powered Knowledge Copilot.
+A modular Python project that progressively evolves into a standalone AI-powered Knowledge Copilot.
 
-This repository currently contains **Task 1 / Week 1: Python Engineering Foundations**.
+This repository currently contains:
 
-## Task 1 Objectives
+- **Task 1 / Week 1:** Python Engineering Foundations
+- **Task 2 / Week 2:** Backend API Fundamentals
 
-- Modular Python project structure
-- Python virtual environment
-- Dependency management with `requirements.txt`
-- JSON file reading and writing
-- JSON data modification
-- Data validation
-- Exception handling
-- Custom exceptions
-- Python type hints
-- Sample knowledge data
-- Runnable `main.py`
-- `.gitignore`
-- Git/GitHub-ready project
+## Task 2 Features
+
+- FastAPI REST backend
+- `GET /health` health-check endpoint
+- `GET /knowledge` endpoint backed by the Task 1 `JsonStorage`
+- `POST /knowledge/search` deterministic non-AI search endpoint
+- Pydantic request and response models
+- `.env` configuration via `pydantic-settings`
+- Structured JSON application logging
+- HTTP error handling
+- Automated API tests with Pytest
+- Basic Dockerfile and `.dockerignore`
+- Swagger/OpenAPI documentation
 
 ## Project Structure
 
 ```text
 standalone-ai-knowledge-copilot/
-│
 ├── data/
 │   └── sample_knowledge.json
-│
 ├── src/
 │   ├── __init__.py
+│   ├── api.py
+│   ├── config.py
+│   ├── logging_config.py
+│   ├── models.py
 │   └── storage.py
-│
+├── tests/
+│   ├── __init__.py
+│   └── test_api.py
+├── .dockerignore
+├── .env.example
 ├── .gitignore
+├── Dockerfile
 ├── main.py
 ├── README.md
 └── requirements.txt
 ```
 
-## Requirements
+## Local Setup
 
-Python 3.10 or newer.
-
-Check your Python version:
-
-```bash
-python --version
-```
-
-## Create Virtual Environment
-
-### Windows
-
-```powershell
-python -m venv .venv
-```
-
-### macOS / Linux
-
-```bash
-python3 -m venv .venv
-```
-
-## Activate Virtual Environment
+Python 3.10+ is required. Python 3.12 is recommended.
 
 ### Windows PowerShell
 
 ```powershell
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-### Windows Command Prompt
-
-```cmd
-.venv\Scripts\activate.bat
-```
-
-### macOS / Linux
-
-```bash
-source .venv/bin/activate
-```
-
-## Install Dependencies
-
-```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-Task 1 currently uses only the Python standard library, so no external packages are required.
+### Run Task 1 CLI
 
-## Run the Project
-
-```bash
+```powershell
 python main.py
 ```
 
-The application demonstrates:
+### Run Task 2 API
 
-1. Reading valid JSON
-2. Validation
-3. Adding a knowledge item
-4. Updating a knowledge item
-5. Deleting a knowledge item
-6. Missing-file error handling
-7. Malformed JSON error handling
-8. Validation-error handling
+```powershell
+python -m uvicorn src.api:app --reload
+```
 
-## Git Setup
+Open:
+
+- `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:8000/health`
+- `http://127.0.0.1:8000/knowledge`
+
+Example `POST /knowledge/search` request:
+
+```json
+{
+  "query": "json",
+  "tag": "python"
+}
+```
+
+## Tests
+
+```powershell
+python -m pytest -v
+```
+
+The suite verifies the health endpoint, knowledge endpoint, search endpoint, and Pydantic request validation.
+
+## Docker
+
+Build:
 
 ```bash
-git init
+docker build -t standalone-ai-knowledge-copilot:task2 .
+```
+
+Run:
+
+```bash
+docker run --rm -p 8000:8000 --env-file .env standalone-ai-knowledge-copilot:task2
+```
+
+## Git: Add Task 2 on Top of Task 1
+
+Task 1 remains in Git history. Task 2 is a new commit on top of it.
+
+Recommended branch workflow:
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b task-2-backend-api
+```
+
+After copying the Task 2 files and testing:
+
+```bash
+git status
 git add .
-git commit -m "Complete Task 1 Python engineering foundations"
-git branch -M main
+git commit -m "Complete Task 2 backend API fundamentals"
+git push -u origin task-2-backend-api
 ```
 
-Create an empty repository on GitHub, then:
+Then create a Pull Request on GitHub and merge `task-2-backend-api` into `main`.
+
+If you intentionally work directly on `main` instead:
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/standalone-ai-knowledge-copilot.git
-git push -u origin main
+git checkout main
+git pull origin main
+git add .
+git commit -m "Complete Task 2 backend API fundamentals"
+git push origin main
 ```
 
-Replace `YOUR_USERNAME` with your GitHub username.
-
-## Deactivate Virtual Environment
-
-```bash
-deactivate
-```
+The existing Task 1 commit is not replaced; the repository history now contains Task 1 followed by Task 2.
