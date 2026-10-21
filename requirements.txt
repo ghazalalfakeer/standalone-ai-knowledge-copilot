@@ -1,7 +1,8 @@
-# Standalone AI Knowledge Copilot
-# Task 1 - Python Engineering Foundations
-#
-# No third-party Python dependencies are required for Task 1.
-# The project currently uses Python standard-library modules only.
-#
-# Future tasks will add dependencies as required.
+# Task 2 runtime dependencies
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic-settings==2.15.0
+
+# Task 2 test dependencies
+pytest==9.1.1
+httpx==0.28.1
