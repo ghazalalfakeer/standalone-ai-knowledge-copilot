@@ -1,8 +1,9 @@
-# Task 2 runtime dependencies
-fastapi==0.141.1
-uvicorn[standard]==0.52.4
+# Runtime dependencies (Tasks 2-3)
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
 pydantic-settings==2.15.0
+google-genai==2.29.0
 
-# Task 2 test dependencies
-pytest==9.1.1
-httpx==0.28.1
+# Test dependencies
+pytest>=9.1,<10
+httpx>=0.28,<1
