@@ -54,3 +54,9 @@ logs/
 # Project-specific runtime files
 data/runtime_*.json
 data/*_demo.json
+
+# Generated AI/RAG runtime artifacts
+artifacts/llm_runs/*.json
+artifacts/vector_store/*.json
+artifacts/retrieval_logs/*.jsonl
+artifacts/evaluation/hash-index.json
