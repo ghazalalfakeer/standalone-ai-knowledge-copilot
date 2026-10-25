@@ -6,15 +6,16 @@ The project is developed incrementally. Each task extends the previous stage ins
 
 ## Current Progress
 
-- Task 1 / Week 1: Python Engineering Foundations
-- Task 2 / Week 2: Backend API Fundamentals
-- Task 3 / Week 3: GCP and LLM Foundations
+- Task 1: Python Engineering Foundations
+- Task 2: Backend API Fundamentals
+- Task 3: GCP and AI/LLM Foundations
+- Task 4: Reliable LLM Application APIs
 
 ---
 
 # Project Overview
 
-The Standalone AI Knowledge Copilot is designed as a modular application that gradually evolves from a local Python program into an AI-powered knowledge system.
+The Standalone AI Knowledge Copilot is designed as a modular application that gradually evolves from a local Python program into a reliable AI-powered knowledge system.
 
 The current architecture includes:
 
@@ -27,12 +28,16 @@ FastAPI Backend
         ↓
 Gemini LLM Integration
         ↓
-Response + Token Metadata
+Reliable AI API Layer
         ↓
-JSON Run Records
+Structured Responses
+        ↓
+Validation + Resilience
+        ↓
+Usage Metadata
 ```
 
-Future stages will extend the application with embeddings, vector search, RAG, tools, workflows, and agentic AI concepts.
+Future stages will extend the application with embeddings, vector search, retrieval-augmented generation, tools, controlled workflows, deployment, and agentic AI concepts.
 
 ---
 
@@ -43,12 +48,14 @@ standalone-ai-knowledge-copilot/
 │
 ├── artifacts/
 │   └── llm_runs/
+│       └── README.md
 │
 ├── data/
 │   └── sample_knowledge.json
 │
 ├── docs/
-│   └── gcp_llm_foundations.md
+│   ├── gcp_llm_foundations.md
+│   └── task4_reliable_llm_apis.md
 │
 ├── scripts/
 │   ├── __init__.py
@@ -56,6 +63,9 @@ standalone-ai-knowledge-copilot/
 │
 ├── src/
 │   ├── __init__.py
+│   ├── ai_models.py
+│   ├── ai_prompts.py
+│   ├── ai_service.py
 │   ├── api.py
 │   ├── config.py
 │   ├── llm_client.py
@@ -66,8 +76,14 @@ standalone-ai-knowledge-copilot/
 │
 ├── tests/
 │   ├── __init__.py
+│   ├── test_ai_api.py
+│   ├── test_ai_fallback.py
+│   ├── test_ai_prompts.py
+│   ├── test_ai_resilience.py
+│   ├── test_ai_structured_completion.py
 │   ├── test_api.py
-│   └── test_llm_client.py
+│   ├── test_llm_client.py
+│   └── test_structured_llm.py
 │
 ├── .dockerignore
 ├── .env.example
@@ -120,8 +136,15 @@ DATA_FILE=data/sample_knowledge.json
 
 GEMINI_API_KEY=YOUR_REAL_API_KEY
 GEMINI_MODEL=gemini-3.8-flash
+GEMINI_FALLBACK_MODEL=gemini-3.6-flash
+
 LLM_TEMPERATURE=0.2
 LLM_MAX_OUTPUT_TOKENS=768
+LLM_STRUCTURED_MAX_OUTPUT_TOKENS=2048
+LLM_THINKING_LEVEL=low
+
+LLM_TIMEOUT_SECONDS=60
+LLM_MAX_RETRIES=2
 ```
 
 The real `.env` file is excluded from Git and must never be committed.
@@ -147,7 +170,10 @@ Task 1 focuses on:
 - reusable storage logic
 - logging
 - error handling
+- type hints
 - clean separation of responsibilities
+
+---
 
 ## Knowledge Data
 
@@ -158,6 +184,8 @@ data/sample_knowledge.json
 ```
 
 This allows the application to work with structured local data without requiring an external database.
+
+---
 
 ## Storage Layer
 
@@ -171,6 +199,8 @@ The storage layer separates data-access logic from the rest of the application.
 
 This makes it easier to replace the local JSON storage with another storage technology later.
 
+---
+
 ## Configuration
 
 Application configuration is centralized in:
@@ -180,6 +210,8 @@ src/config.py
 ```
 
 Configuration values can be loaded from environment variables instead of being hardcoded inside application logic.
+
+---
 
 ## Logging
 
@@ -191,6 +223,8 @@ src/logging_config.py
 
 This provides a consistent logging strategy across the application.
 
+---
+
 ## Task 1 Demo
 
 Run:
@@ -199,9 +233,22 @@ Run:
 python main.py
 ```
 
-The demonstration verifies that the local application and storage layer are working correctly.
+The demonstration verifies:
 
-A successful execution should finish without errors and demonstrate the basic Python application functionality.
+- valid JSON loading
+- knowledge item creation
+- updates
+- deletion
+- missing-file handling
+- malformed JSON handling
+- data validation
+
+A successful execution finishes with:
+
+```text
+TASK 1 DEMO COMPLETED
+All demonstrations finished.
+```
 
 ---
 
@@ -224,6 +271,8 @@ Task 2 focuses on:
 - interactive API documentation
 - basic containerization
 
+---
+
 ## API Implementation
 
 The backend API is implemented in:
@@ -239,6 +288,8 @@ src/models.py
 ```
 
 The API reuses the storage layer created in Task 1 instead of duplicating data-access logic.
+
+---
 
 ## Main API Endpoints
 
@@ -266,6 +317,8 @@ POST /knowledge/search
 
 Accepts a search request and returns matching knowledge content.
 
+---
+
 ## Run the API
 
 Start the FastAPI server with:
@@ -274,17 +327,19 @@ Start the FastAPI server with:
 python -m uvicorn src.api:app --reload
 ```
 
-The interactive API documentation is available at:
+Interactive API documentation:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-The OpenAPI schema is available at:
+OpenAPI schema:
 
 ```text
 http://127.0.0.1:8000/openapi.json
 ```
+
+---
 
 ## API Testing
 
@@ -300,24 +355,26 @@ Run the test suite with:
 python -m pytest -v
 ```
 
+---
+
 ## Docker Support
 
-Task 2 also introduces:
+Task 2 introduces:
 
 ```text
 Dockerfile
 .dockerignore
 ```
 
-This prepares the backend for containerized deployment in later cloud-related stages.
+This prepares the application for containerized deployment in later cloud-related stages.
 
 ---
 
-# Task 3 - GCP and LLM Foundations
+# Task 3 - GCP and AI/LLM Foundations
 
-Task 3 adds the first real Large Language Model integration to the Standalone AI Knowledge Copilot.
+Task 3 introduces the first real Large Language Model integration into the Standalone AI Knowledge Copilot.
 
-The application now communicates with Google Gemini while preserving the storage and backend layers created in Tasks 1 and 2.
+The application communicates with Google Gemini while preserving the storage and backend layers created in Tasks 1 and 2.
 
 ## Objectives
 
@@ -364,7 +421,7 @@ JSON Run Record
 
 ---
 
-# Gemini Integration
+## Gemini Integration
 
 The Gemini integration is implemented in:
 
@@ -389,7 +446,7 @@ Keeping LLM-specific logic inside a dedicated client prevents AI-provider logic 
 
 ---
 
-# LLM Error Handling
+## LLM Error Handling
 
 The LLM integration defines dedicated application-level exceptions for different failure scenarios.
 
@@ -402,11 +459,11 @@ LLMRequestError
 LLMResponseError
 ```
 
-This makes failures easier to understand and handle than exposing raw SDK exceptions directly to the application.
+Later tasks extend these exception types with more specific provider and reliability errors.
 
 ---
 
-# Gemini Configuration
+## Secure Gemini Configuration
 
 Gemini settings are loaded from environment variables.
 
@@ -419,7 +476,7 @@ LLM_TEMPERATURE=0.2
 LLM_MAX_OUTPUT_TOKENS=768
 ```
 
-The real API key is stored only in the local:
+The real API key is stored only in:
 
 ```text
 .env
@@ -437,7 +494,7 @@ as a safe configuration template without credentials.
 
 ---
 
-# First Real Gemini Call
+## First Real Gemini Call
 
 The Task 3 demonstration is implemented in:
 
@@ -473,46 +530,14 @@ Create LLM run result
 Save JSON run record
 ```
 
-A successful execution displays:
-
-```text
-Task 3 - First Gemini LLM Call
-
-MODEL RESPONSE
-...
-
-TOKEN USAGE
-...
-
-Run record saved to: artifacts/llm_runs/...
-
-Task 3 LLM demo completed successfully.
-```
-
 ---
 
-# Example Prompt
+## Token Awareness
 
-The demonstration uses a simple educational prompt:
-
-```text
-Explain in three concise bullet points what a context window is in a large language model.
-```
-
-The purpose is not to build a complex AI feature yet.
-
-The goal of Task 3 is to prove that the project can successfully communicate with a real LLM and capture useful metadata about the request.
-
----
-
-# Token Awareness
-
-The application records several token measurements.
-
-These include:
+The application records several token measurements:
 
 ```text
-Prompt tokens (pre-count)
+Prompt tokens
 Input tokens
 Output tokens
 Thinking tokens
@@ -521,130 +546,87 @@ Total tokens
 
 This provides visibility into model usage rather than treating the LLM as a black box.
 
-A real successful Task 3 execution can therefore show information such as:
-
-```text
-Prompt tokens (pre-count): 18
-Input tokens (usage metadata): 18
-Output tokens: ...
-Thinking tokens: ...
-Total tokens: ...
-```
-
 ---
 
-# Context Window
+## Context Window
 
 A context window represents the amount of information an LLM can process within a request.
 
-It includes information such as:
+It may include:
 
 - the user prompt
 - conversation history
-- provided context
+- supplied context
 - retrieved documents
 - generated output
 
-Understanding context-window limitations becomes especially important in later RAG stages where retrieved documents will be inserted into model prompts.
+Understanding context-window limitations becomes increasingly important in later retrieval-based stages.
 
 ---
 
-# Temperature
+## Temperature
 
 Temperature is an LLM generation parameter related to randomness and output variation.
 
-The project keeps temperature as part of the application configuration:
+The application keeps temperature as part of the configuration:
 
 ```env
 LLM_TEMPERATURE=0.2
 ```
 
-For the currently selected Gemini model, the application can intentionally avoid sending this parameter when required for model compatibility.
-
-The configuration is still retained because temperature is an important LLM concept and may be used by other models or later project stages.
+The client can choose whether to send this parameter depending on model compatibility.
 
 ---
 
-# Cost Awareness
+## Cost Awareness
 
-The application tracks token usage and supports optional cost estimation.
+Token usage is tracked and optional cost estimation is supported.
 
-Current model prices are intentionally not hardcoded into the Python source code because provider pricing may change.
+Model prices are intentionally not hardcoded into the Python source because provider pricing can change.
 
-Optional prices can be configured using:
+Optional pricing values can be configured with environment variables.
 
-```env
-GEMINI_INPUT_COST_PER_1M_USD=
-GEMINI_OUTPUT_COST_PER_1M_USD=
-```
-
-If these values are not configured, the application still records token usage but reports:
-
-```text
-Estimated cost: not calculated
-```
-
-This avoids presenting stale or incorrect pricing information.
+If pricing values are not configured, token usage is still recorded while cost estimation remains disabled.
 
 ---
 
-# LLM Run Records
+## LLM Run Records
 
-Each successful LLM execution can be saved as a timestamped JSON record inside:
+Successful LLM executions can be stored as timestamped JSON records inside:
 
 ```text
 artifacts/llm_runs/
 ```
 
-The run record contains information such as:
+Run records can contain:
 
 - timestamp
 - model
 - prompt
-- model response
+- response
 - generation configuration
 - token usage
 - optional estimated cost
 
-The API key is never stored inside the run record.
-
-This provides basic traceability and observability for LLM interactions.
+The API key is never stored inside these records.
 
 ---
 
-# Task 3 Testing Strategy
+## Task 3 Testing Strategy
 
-Automated Task 3 tests are implemented in:
+Task 3 tests are implemented in:
 
 ```text
 tests/test_llm_client.py
 ```
 
-The tests do not need to make real Gemini API calls.
+The tests do not require real Gemini API calls.
 
-Instead, the LLM client supports dependency injection so fake clients and responses can be supplied during testing.
-
-This allows functionality such as the following to be tested safely:
-
-- configuration validation
-- prompt handling
-- response processing
-- token metadata extraction
-- cost calculations
-- error handling
-- run-record persistence
-
-without consuming live Gemini quota.
-
-Run all tests with:
-
-```powershell
-python -m pytest -v
-```
+Dependency injection allows fake clients and responses to be used during automated testing.
 
 ---
 
-# GCP and LLM Foundations Documentation
+## GCP and LLM Foundations Documentation
 
 The theoretical material for Task 3 is documented in:
 
@@ -654,7 +636,7 @@ docs/gcp_llm_foundations.md
 
 Topics include:
 
-## Google Cloud
+### Google Cloud
 
 - resource hierarchy
 - projects
@@ -667,7 +649,7 @@ Topics include:
 - Vertex AI
 - Gemini
 
-## Large Language Models
+### Large Language Models
 
 - tokens
 - tokenization
@@ -678,7 +660,488 @@ Topics include:
 - token usage
 - cost awareness
 
-This documentation supports the practical Gemini integration with the cloud and AI concepts required for Task 3.
+---
+
+# Task 4 - Reliable LLM Application APIs
+
+Task 4 transforms the basic Gemini integration from Task 3 into a more reliable, structured, and production-oriented application API layer.
+
+Instead of using the LLM only through a command-line demo, the application now exposes dedicated FastAPI endpoints with structured outputs, schema validation, resilience mechanisms, usage metadata, and automated tests.
+
+## Objectives
+
+Task 4 focuses on:
+
+- reliable LLM application APIs
+- reusable prompt templates
+- structured JSON output
+- Pydantic request and response validation
+- configurable summarization behavior
+- information extraction
+- timeout handling
+- bounded retries
+- controlled fallback-model behavior
+- provider-specific error handling
+- structured-output recovery
+- token-usage visibility
+- automated API and LLM tests
+
+---
+
+## Task 4 Architecture
+
+```text
+Client Request
+      ↓
+FastAPI Endpoint
+      ↓
+Pydantic Input Validation
+      ↓
+AIService
+      ↓
+Prompt Template
+      ↓
+GeminiLLMClient
+      ↓
+Primary Gemini Model
+      ↓
+Structured JSON Response
+      ↓
+Pydantic Output Validation
+      ↓
+Normalization
+      ↓
+Usage Metadata
+      ↓
+Reliable API Response
+```
+
+For selected temporary provider failures, the application can use a controlled fallback model:
+
+```text
+Primary Model
+      ↓
+Temporary Provider Failure
+      ↓
+Fallback Model
+      ↓
+Validated Structured Response
+```
+
+---
+
+## AI API Endpoints
+
+Task 4 introduces:
+
+```text
+POST /ai/summarize
+POST /ai/extract
+```
+
+Both endpoints use structured LLM outputs instead of unrestricted free-text responses.
+
+---
+
+## Summarization API
+
+Endpoint:
+
+```http
+POST /ai/summarize
+```
+
+Example request:
+
+```json
+{
+  "text": "Google Cloud provides managed infrastructure and artificial intelligence services. Cloud Run executes containerized applications without requiring developers to manage servers.",
+  "max_sentences": 2,
+  "style": "technical",
+  "focus": "Cloud Run"
+}
+```
+
+The endpoint supports configurable behavior through:
+
+```text
+max_sentences
+style
+focus
+```
+
+Supported summary styles include:
+
+```text
+concise
+executive
+technical
+```
+
+The optional `focus` field allows a request to emphasize a particular topic.
+
+Example response structure:
+
+```json
+{
+  "summary": "Structured summary generated by the model.",
+  "key_points": [
+    "Key point one",
+    "Key point two"
+  ],
+  "model": "gemini-3.8-flash",
+  "usage": {
+    "prompt_tokens_precount": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0,
+    "total_tokens": 0,
+    "estimated_cost_usd": null
+  }
+}
+```
+
+Actual usage values depend on each request.
+
+---
+
+## Structured Extraction API
+
+Endpoint:
+
+```http
+POST /ai/extract
+```
+
+Example request:
+
+```json
+{
+  "text": "Alice Müller from Example GmbH approved an invoice of 100 EUR on October 21, 2026 for the Cloud Run migration project."
+}
+```
+
+The endpoint extracts structured information into categories such as:
+
+```text
+people
+organizations
+dates
+amounts
+keywords
+```
+
+Example response structure:
+
+```json
+{
+  "people": [
+    "Alice Müller"
+  ],
+  "organizations": [
+    "Example GmbH"
+  ],
+  "dates": [
+    "October 21, 2026"
+  ],
+  "amounts": [
+    "100 EUR"
+  ],
+  "keywords": [
+    "Cloud Run",
+    "migration"
+  ],
+  "model": "gemini-3.8-flash",
+  "usage": {
+    "prompt_tokens_precount": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0,
+    "total_tokens": 0,
+    "estimated_cost_usd": null
+  }
+}
+```
+
+Extracted list values are normalized to reduce unnecessary duplicates and inconsistent whitespace.
+
+---
+
+## Prompt Templates
+
+Task 4 separates prompt construction from API and service logic.
+
+Prompt templates are implemented in:
+
+```text
+src/ai_prompts.py
+```
+
+This keeps prompt engineering:
+
+- reusable
+- testable
+- independent from HTTP handling
+- easier to maintain
+
+The summarization prompt includes instructions for:
+
+- requested summary style
+- maximum sentence count
+- optional topic focus
+- grounding the result in supplied text
+- structured output requirements
+
+The extraction prompt defines the expected information categories and instructs the model to return empty lists when information is not present instead of inventing values.
+
+---
+
+## Structured Output
+
+A major Task 4 improvement is structured LLM generation.
+
+Instead of accepting arbitrary text, the application expects a predefined JSON structure.
+
+```text
+Gemini
+   ↓
+Structured JSON
+   ↓
+Pydantic Schema
+   ↓
+Validated Python Object
+   ↓
+API Response
+```
+
+If model output does not match the required schema, the application rejects it instead of silently returning malformed data.
+
+---
+
+## Input and Output Validation
+
+Pydantic models validate both sides of the AI interaction.
+
+### Request Validation
+
+Invalid requests are rejected before reaching Gemini.
+
+Examples include:
+
+- text that is too short
+- unsupported summary styles
+- invalid field values
+
+### Response Validation
+
+Generated structured output is validated against the expected schema before it is returned to the API client.
+
+This protects the rest of the application from malformed or unexpected LLM responses.
+
+---
+
+## Reliability and Error Handling
+
+External LLM providers can temporarily fail, become overloaded, exceed quota limits, respond slowly, or return incomplete output.
+
+Task 4 handles these scenarios explicitly.
+
+```text
+429 Too Many Requests
+Provider quota or rate limit reached
+
+502 Bad Gateway
+Invalid or unusable upstream model response
+
+503 Service Unavailable
+AI provider temporarily unavailable
+
+504 Gateway Timeout
+AI provider failed to complete the request within the allowed time
+```
+
+This is more informative than returning a generic `500 Internal Server Error`.
+
+---
+
+## Timeout Handling
+
+LLM requests use a configurable timeout:
+
+```env
+LLM_TIMEOUT_SECONDS=60
+```
+
+This prevents API requests from waiting indefinitely when the external provider becomes slow or unresponsive.
+
+Both local network timeout conditions and provider-side deadline failures are handled as temporary upstream failures.
+
+---
+
+## Retry Strategy
+
+Temporary failures may be retried automatically.
+
+The retry count is intentionally bounded:
+
+```env
+LLM_MAX_RETRIES=2
+```
+
+Bounded retries improve reliability without allowing uncontrolled repeated requests.
+
+---
+
+## Controlled Fallback Model
+
+Task 4 supports a primary model and an optional fallback model.
+
+Example:
+
+```env
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_FALLBACK_MODEL=gemini-3.6-flash
+```
+
+The fallback is used only for selected temporary failures such as:
+
+- provider unavailability
+- connection/read timeout
+- provider-side deadline exceeded
+
+The application does not automatically fan out every error to another model.
+
+For example, provider quota or rate-limit errors are handled separately.
+
+When the fallback model successfully handles a request, the actual model used is returned in the API response.
+
+---
+
+## Structured Output Completion Strategy
+
+Structured JSON must be complete before it can be parsed and validated.
+
+Task 4 therefore uses a dedicated output-token budget:
+
+```env
+LLM_STRUCTURED_MAX_OUTPUT_TOKENS=2048
+```
+
+For these focused structured tasks, the application uses:
+
+```env
+LLM_THINKING_LEVEL=low
+```
+
+This helps reserve more generation capacity for the final structured response.
+
+If a structured response reaches the output limit before completion, the client can perform one bounded recovery attempt using a larger generation budget.
+
+Recovery is intentionally limited to avoid uncontrolled repeated model calls.
+
+---
+
+## Token Usage Metadata
+
+Successful AI responses include usage information.
+
+Tracked values include:
+
+```text
+Prompt token pre-count
+Input tokens
+Output tokens
+Thinking tokens
+Total tokens
+Optional estimated cost
+```
+
+This improves observability and makes LLM resource usage visible to the application.
+
+---
+
+## Task 4 Configuration
+
+Relevant Task 4 configuration values include:
+
+```env
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_FALLBACK_MODEL=gemini-3.6-flash
+
+LLM_MAX_OUTPUT_TOKENS=768
+LLM_STRUCTURED_MAX_OUTPUT_TOKENS=2048
+LLM_THINKING_LEVEL=low
+
+LLM_TIMEOUT_SECONDS=60
+LLM_MAX_RETRIES=2
+```
+
+The real Gemini API key remains only in `.env` and is never committed to Git.
+
+---
+
+## Task 4 Testing Strategy
+
+Task 4 includes automated tests for successful behavior and failure scenarios.
+
+The suite covers areas such as:
+
+```text
+AI API response structure
+Request validation
+Unknown summary styles
+Prompt-template behavior
+Structured-output validation
+Entity normalization
+Provider 503 handling
+Provider 429 handling
+Network timeout handling
+Provider 504 handling
+Fallback after temporary failures
+No fallback fan-out for rate limits
+Structured-output completion recovery
+OpenAPI reliability responses
+Token-usage handling
+```
+
+Fake or mocked model clients are used where appropriate.
+
+This avoids consuming live Gemini quota during normal automated testing and makes the test suite deterministic.
+
+Run all tests with:
+
+```powershell
+python -m pytest -v
+```
+
+At the completion of Task 4:
+
+```text
+27 tests passed
+```
+
+---
+
+## Live Validation
+
+Both Task 4 AI endpoints were also tested against the real Gemini service.
+
+Successful live requests were confirmed for:
+
+```text
+POST /ai/summarize → 200 OK
+POST /ai/extract   → 200 OK
+```
+
+During development, real provider failure scenarios were observed, including:
+
+- temporary provider unavailability
+- request timeouts
+- provider-side deadline exceeded
+- quota exhaustion
+- incomplete structured generation
+
+These real scenarios helped validate and improve the reliability layer.
 
 ---
 
@@ -690,19 +1153,30 @@ This documentation supports the practical Gemini integration with the cloud and 
 python main.py
 ```
 
-## Task 2 API
+## FastAPI Backend
 
 ```powershell
 python -m uvicorn src.api:app --reload
 ```
 
-Then open:
+Open:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-## Task 3 Gemini Demo
+Current endpoints include:
+
+```text
+GET  /health
+GET  /knowledge
+POST /knowledge/search
+
+POST /ai/summarize
+POST /ai/extract
+```
+
+## Task 3 Gemini CLI Demo
 
 ```powershell
 python -m scripts.llm_demo
@@ -726,7 +1200,7 @@ The following file remains local:
 .env
 ```
 
-The repository only contains:
+The repository contains only:
 
 ```text
 .env.example
@@ -738,7 +1212,9 @@ Before every commit, verify the repository state with:
 git status
 ```
 
-The `.env` file should not appear in files staged for commit.
+The `.env` file must not appear in staged files.
+
+Generated local LLM run records are also excluded from normal commits.
 
 ---
 
@@ -756,7 +1232,12 @@ The project currently follows several software-engineering principles:
 - automated testing
 - dependency injection
 - secure secret handling
-- observability of LLM usage
+- structured LLM outputs
+- bounded retries
+- timeout protection
+- controlled fallback behavior
+- provider-specific error handling
+- usage observability
 - incremental development
 
 ---
@@ -771,30 +1252,16 @@ Task 2
 Backend API Fundamentals
         ↓
 Task 3
-GCP and LLM Foundations
+GCP and AI/LLM Foundations
         ↓
 Task 4
-Reliable LLM APIs
+Reliable LLM Application APIs
         ↓
-Task 5
-Embeddings and Vector Search
-        ↓
-Task 6
-Basic RAG
-        ↓
-Task 7
-RAG Evaluation
-        ↓
-Task 8
-LangChain Tools
-        ↓
-Task 9
-LangGraph Workflow
-        ↓
-Task 10
-Agentic AI and Cloud Architecture
+Future Tasks
+Embeddings, Vector Search, RAG,
+Agent Workflows, Deployment and Evaluation
 ```
 
-Tasks 1 through 3 are currently implemented.
+Tasks 1 through 4 are currently implemented and tested.
 
 Each new task builds on the existing project rather than replacing previous work.
